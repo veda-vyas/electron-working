@@ -1,0 +1,18 @@
+#BlueJ class context
+comment0.params=
+comment0.target=Canvas()
+comment1.params=g
+comment1.target=void\ paintComponent(java.awt.Graphics)
+comment2.params=
+comment2.target=java.awt.Dimension\ getPreferredSize()
+comment3.params=
+comment3.target=Canvas\ getInstance()
+comment4.params=
+comment4.target=void\ repaint()
+comment5.params=
+comment5.target=void\ pause()
+comment5.text=\r\n\ Pauses\ so\ that\ the\ user\ can\ see\ the\ picture\ before\ it\ is\ transformed.\r\n
+comment6.params=
+comment6.target=void\ snapshot()
+comment6.text=\r\n\ Takes\ a\ snapshot\ of\ the\ screen,\ fades\ it,\ and\ sets\ it\ as\ the\ background.\r\n
+numComments=7

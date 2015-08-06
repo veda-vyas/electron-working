@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+<!-- <link type="text/css" rel="stylesheet" href="style.css"> -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="javascripts/jquery.min.js"></script>
+
+<link rel="stylesheet" href="stylesheets/bootstrap.min.css">
+		<!-- Optional theme -->
+<link rel="stylesheet" href="stylesheets/bootstrap-theme.min.css">
+
+	<script src="javascripts/bootstrap.min.js"></script>
+<title>Pin Generate</title>
+</head>
+<body style="font-size:13px">
+	<div class="container-fluid" style="padding:0px">
+	<div id="headerwrap" class="container-fluid">
+	<div class="row">
+	<div class="col-md-2 text-right" style="padding-right:50px">
+	</div>
+	<div class="col-md-10">
+	
+	</div>
+	</div>	
+	</div>
+	<div hidden  align="center" style="font-size:20px;margin-top:50px;margin-bottom:-25px"><div id="welcome" style="display:inline-block"></div><div  style="display:inline-block;color:blue;"><a id="em" href="#" name="fillCookies"></a></div></div>
+		<div  class="container" name="instructions" style="width:25%;margin:0 auto; margin-top:40px;">
+	</div>
+	<br/><br/><br/><br/>
+	<div  class = "container ">
+	<div class="col-lg-3 col-md-3 col-sm-3 col-xs-1"></div>
+
+			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-10 well well-lg">
+	<form class="form-horizontal" action="javascript:void(0);" >
+	<div class="container" style="margin-left:20px;margin-top:10px">
+	
+	
+	<div class="form-group" >
+	<p ><b> Step 1: Give your email address for communication</b></p>
+		<label style="margin-left:0px;font-weight:normal" style="margin-left:-15px;" for="email"> Email Address</label>
+		<input style="margin-left:10px;width:200px" id="email" name="email" class="input" type="email"></input>
+		<button  id="sendPin" class="btn btn-primary"> Generate PIN </button>
+	</div>
+	<p style="margin-left:90px" hidden id="email_error"> </p>
+
+	<div style="margin-top:1px"><p  hidden id="info1"></p>
+	<p  hidden id="info2"> </p></div>
+	</div>
+	</form>
+	
+	<div id="pinn">
+	<form style="margin-left:30px" class="form-horizontal" action="javascript:void(0);" >
+	<div class="form-group">
+	<p style="margin-left:0px"><b> Step 2:  Enter the PIN sent to your email.</b> </p>
+		<label style="margin-left:0px;font-weight:normal" for="pin"> 4 Digit PIN</label>
+		<input style="margin-left:27px;width:200px" id="pin" class="input" type="password" placeholder="Enter PIN here"></input>
+		<button style="margin-left:5px;" id="validate" class="btn btn-primary" > Verify PIN </button>
+	</div>
+	<p style="margin-left:80px" hidden id="info"> </p>
+	</form>
+	</div>
+	</div>
+	</div>
+	<div class="col-lg-3 col-md-3 col-sm-3 col-xs-1"></div>
+	</div>
+	
+</body>
+<script src="javascripts/jquery.min.js"></script>
+<script>
+
+$('#sendPin').click(function(){
+	if(true) {
+		var em = $('#email').val();
+		console.log(em);
+		$("#email_error").css('color','red')
+		if(validateField("#email","email")) {
+			var httpify = require('httpify');
+			var req = httpify({
+				url: 'https://msit-prep.appspot.com/sendpin',
+				method: 'POST',
+				type: 'text',
+				form: {email: em}
+			}, function(err, response, body) {
+				console.log("BOLD: "+err);
+				console.log("SYS: "+response.body);
+				console.log("BODY: "+body)
+			});
+
+			req.then(function(response){
+				console.log(response.body)
+				$("#email_error").hide();
+				$("#email").css('outline-color','#1589FF');
+				
+				$('#info1').show()
+				$('#info2').show()
+					console.log(response.body);
+					$('#info1').css('color', 'green');
+					$('#info1').css("list-style-type", "bullet");
+					$('#info2').css('color', 'green');
+					$('#info2').css("list-style-type", "bullet");
+					
+					$("#info1").html("A PIN has been generated and sent to your email address")
+					$("#info2").html("Please check your mail and enter the PIN below in Step 2 to verify");
+					$("#sendPin").text("Submit");
+					$("#pinn").show();
+			});
+
+		} else {
+			$("#email").css('outline-color','red');
+			$("#email").focus()
+			console.log("failed");
+		}
+	}
+});
+function showMsg(id,msg) {
+	$(id).show()
+	$(id).html(msg);
+}
+function validateField() {
+	var id = "#email";
+	var value = $(id).val();
+	id = id+"_error";
+	var pass = false;
+	if(value.indexOf("@") == -1)
+		showMsg(id, "Email must include one @.")
+	else if(value.indexOf(".") == -1)
+					showMsg(id, "Email must include one dot (.)")
+	else if(value.indexOf("@.") != -1 || value.indexOf(".@") != -1 || value[value.length - 1] == ".")
+					showMsg(id,"Email before and after @ cannot start or end with a dot.")
+	else if(value[value.length - 1] == "@")
+					showMsg(id, "invalid email id.")
+	else {
+					$(id).hide();
+					pass = true;
+	}
+	return pass;
+}
+
+$('#validate').click(function(){
+	//var resp = grecaptcha.getResponse()
+	if(true) {
+			var pass = true;
+			var pi = $("#pin").val();
+			var em = $('#email').val();
+			console.log(pi + " |||  "+ em)
+			if(pi == "") {
+				$('#info').show();
+				$('#info').css('color', 'red');
+				$("#pin").css('outline-color','red');
+				$("#pin").focus();
+				$("#info").html("Please enter generated PIN.");
+				pass = false;
+			} 
+			if(em == "") {
+					$("#email").css('outline-color','red');
+					$("#email").focus();
+					$("#info").html("Please enter generated PIN.");
+					$("#email_error").show();
+					$("#email_error").css('color','red')
+					$("#email_error").html("Please enter email address");
+					pass = false;
+					
+				} 
+				if (pass) {
+
+					var httpify = require('httpify');
+					var req = httpify({
+						url: 'https://msit-prep.appspot.com/validatepin',
+						method: 'POST',
+						type: 'text',
+						form: {pin:pi,email:em}
+					}, function(err, response, body) {
+						console.log("BOLD: "+err);
+						console.log("SYS: "+response.body);
+						console.log("BODY: "+body)
+					});
+
+					req.then(function(response){
+						console.log(response.body)
+						var data = response.body;
+						if(data != "failed") {
+								$('#info').show();
+								$('#info').css('color', 'green');
+								$("#info").html("Successfully verified");
+								console.log("test");
+								var ipc = require('ipc');
+								ipc.send("details",data);
+								
+							} else {
+								console.log("test in else");
+								$('#info').show();
+								$("#email_error").hide();
+								$('#info').css('color', 'red');
+								$("#info").html("Invalid Pin");
+							}
+					});
+						/*$.post("meta/validatepin",{pin:pi,email:em}, function(data){
+							$("#pin").css('outline-color','#1589FF');
+							$("#email").css('outline-color','#1589FF');
+							$('#info').show()
+							if(data != "failed") {
+								$('#info').css('color', 'green');
+								$("#info").html("Successfully verified");
+								console.log("test");
+								$.post("/meta/login",{email:data},function(dataa){
+									console.log(dataa);
+									window.location.href="Apply.html"
+								});
+								
+							} else {
+								$("#email_error").hide();
+								$('#info').css('color', 'red');
+								$("#info").html("Invalid Pin");
+							}
+						});*/
+			}
+	}
+});
+
+</script>
+
+</html>
